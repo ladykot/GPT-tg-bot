@@ -10,6 +10,7 @@
 
 # production
 /build
+/voices
 
 # misc
 .DS_Store
