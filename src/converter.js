@@ -4,6 +4,7 @@ import installer from '@ffmpeg-installer/ffmpeg'
 import { createWriteStream } from 'fs'; // module Node.js for interacting with files
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
+import { removeFile} from './utils.js';
 
 // преобразуем URL файла в путь к этому файлу и используем в методе create
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -21,7 +22,10 @@ class OggConverter {
         ffmpeg(input)
         .inputOption('-t 30') // конвертируются первые 30 с
         .output(outputPath)
-        .on('end', () => resolve(outputPath)) // обработчик события вызывается, когда конвертация завершена
+        .on('end', () => {
+            removeFile(input)
+            resolve(outputPath)
+        }) // обработчик события вызывается, когда конвертация завершена
         .on('error', (err) => reject(err.message))
         .run() // метод запуска конвертации
       })
