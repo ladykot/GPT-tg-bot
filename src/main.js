@@ -44,6 +44,24 @@ bot.on(message('voice'), async (ctx) => {
   }
 });
 
+bot.on(message('text'), async (ctx) => {
+  ctx.session ??= INITIAL_SESSION;
+  try {
+    await ctx.reply(code('(∩^o^)⊃━☆ﾟ.*･｡ﾟ...'));
+
+    ctx.session.messages.push({ role: openai.roles.USER, content: ctx.message.text });
+
+    const response = await openai.chat(ctx.session.messages);
+
+    ctx.session.messages.push({
+      role: openai.roles.ASSISTANT,
+      content: response.content,
+    });
+    await ctx.reply(response.content);
+  } catch (error) {
+    console.log('Error while voice message', error.message);
+  }
+});
 
 bot.command('start', async (ctx) => {
   ctx.session = INITIAL_SESSION;
