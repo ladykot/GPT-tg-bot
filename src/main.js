@@ -1,5 +1,6 @@
 import { Telegraf } from 'telegraf';
 import { message } from 'telegraf/filters';
+import { code } from 'telegraf/format';
 import config from 'config';
 import { ogg } from './converter.js';
 import { openai } from './openai.js';
@@ -8,18 +9,18 @@ const bot = new Telegraf(config.get('TELEGRAM_TOKEN'));
 
 bot.on(message('voice'), async (ctx) => {
   try {
+    await ctx.reply(code('(∩^o^)⊃━☆ﾟ.*･｡ﾟ...'));
     const link = await ctx.telegram.getFileLink(ctx.message.voice.file_id); // get link to .ogg file
     const userId = String(ctx.message.from.id);
     const oggPath = await ogg.create(link.href, userId);
     const mp3Path = await ogg.convertToMp3(oggPath, userId);
     const text = await openai.transcription(mp3Path);
-    // const response = await openai.chat(text)
-    // await ctx.reply(JSON.stringify(link, null, 2));
-    await ctx.reply(text);
+    const messages = [{ role: openai.roles.USER, content: text }];
+    const response = await openai.chat(messages);
+    await ctx.reply(response.content);
   } catch (error) {
     console.log('Error while voice message', error.message);
   }
-
 });
 
 bot.command('start', async (ctx) => {
