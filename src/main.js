@@ -15,8 +15,8 @@ bot.use(session()); // чтобы запомнить контекст разго
 
 // команда д/создания новой сессии
 bot.command('new', async (ctx) => {
-  ctx.session = INITIAL_SESSION;
-  await ctx.reply('... Чем могу помочь?');
+  ctx.session = { messages: [] };
+  await ctx.reply('... Чем могу помочь');
 });
 
 // обработчик голосовых сообщений
@@ -47,7 +47,7 @@ bot.on(message('voice'), async (ctx) => {
 
 // обработчик текстовых сообщений
 bot.on(message('text'), async (ctx) => {
-  ctx.session ??= INITIAL_SESSION;
+  ctx.session ??= { messages: [] };
   try {
     await ctx.reply(code('(∩^o^)⊃━☆ﾟ.*･｡ﾟ...'));
 
@@ -92,7 +92,7 @@ bot.command('image', async (ctx) => {
 });
 
 bot.command('start', async (ctx) => {
-  ctx.session = INITIAL_SESSION;
+  ctx.session = { messages: [] };
   // reply to user
   await ctx.reply(JSON.stringify(ctx.message, null, 2)); // ctx - current info about bot's state
 });
